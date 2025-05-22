@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Hello Vite + Vue + Chrome Extensions",
+  "description": "Base Level Extension",
+  "version": "1.0",
+  "action": {
+    "default_popup": "index.html"
+  },
+  "host_permissions": [
+    "http://localhost:5173/*"
+  ],
+    "background": {
+    "service_worker": "service_worker.js"
+  }
+}
