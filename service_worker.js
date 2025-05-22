@@ -5,3 +5,5 @@ chrome.windows.create({
   height: 600,
   focused: true
 });
+
+// chrome.action.openPopup();

@@ -2,12 +2,12 @@
 import { ref, onMounted ,computed  } from "vue";
 
 const radius = ref(50); // radius
-const startAngle = ref(90); 
+const startAngle = ref(0); 
 const rotateAngle = computed(() => {
   return startAngle.value -90;
 });
 
-const totalTime = 25*60; // 25 minutes in seconds
+const totalTime = 25*60-1; // 25 minutes in seconds
 const remainingTime = ref(totalTime);
 const dashOffset =computed (() => {
   return (remainingTime.value / totalTime) * 314;
@@ -21,15 +21,24 @@ const displayTime = computed(() => {
 
 const isCounting = ref(false);
 let time;
+const startTime = ref(null);
+const endTime = ref(null);
 
 const startCountdown = () =>{
   if(!time){
+      startTime.value = new Date().toLocaleTimeString(); // 記錄開始時間
 time= setInterval(()=>{
+ 
+
     if(remainingTime.value>0){
       remainingTime.value --;
     }
     else{
+     
+      console.log(startTime,endTime);
       clearInterval(time);
+      endTime.value = new Date().toLocaleTimeString(); // 記錄結束時間
+      console.log(startTime.value + ' - ' + endTime.value);
     }
   },1000);
   }
@@ -59,8 +68,8 @@ onMounted(() => {
 </script>
 
 <template>
-  {{ displayTime }}<br>
-  {{ dashOffset }}<br>
+  <span>  {{ displayTime }}</span><br>
+
   <svg width="120" height="120" viewBox="0 0 120 120">
     <circle
       cx="60"
@@ -85,4 +94,7 @@ onMounted(() => {
   </svg>
 <br>
   <button @click="toggleCountdown">{{isCounting?'Pause':'Start'}}</button>
+      <p>開始時間：{{ startTime }}</p>
+    <p>結束時間：{{ endTime }}</p>
+
 </template>
