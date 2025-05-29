@@ -1,17 +1,28 @@
 <script setup>
 import { ref, onMounted ,computed  } from "vue";
 
-const radius = ref(50); // radius
-const startAngle = ref(0); 
-const rotateAngle = computed(() => {
-  return startAngle.value -90;
+import { useSettingsStore } from "../stores/settingsStore.js";
+const settingsStore = useSettingsStore();
+
+// const startAngle = ref(0); 
+// const rotateAngle = computed(() => {
+//   return startAngle.value -90;
+// });
+
+const totalTime = 5; // 將分鐘轉換為秒
+const remainingTime = ref(totalTime);
+// const dashOffset =computed (() => {
+//   return (remainingTime.value / totalTime.value) * 314;
+// });
+
+const progress=computed(() => {
+  const percentage = 100-( (remainingTime.value / totalTime) * 100);
+
+
+  return  Math.round(percentage * 100) / 100;
 });
 
-const totalTime = 25*60-1; // 25 minutes in seconds
-const remainingTime = ref(totalTime);
-const dashOffset =computed (() => {
-  return (remainingTime.value / totalTime) * 314;
-});
+
 const displayTime = computed(() => {
   const minutes = Math.floor(remainingTime.value / 60);
   const seconds = remainingTime.value % 60;
@@ -19,8 +30,9 @@ const displayTime = computed(() => {
 });
 
 
-const isCounting = ref(false);
+
 let time;
+const isCounting = ref(false);
 const startTime = ref(null);
 const endTime = ref(null);
 
@@ -28,15 +40,13 @@ const startCountdown = () =>{
   if(!time){
       startTime.value = new Date().toLocaleTimeString(); // 記錄開始時間
 time= setInterval(()=>{
- 
-
     if(remainingTime.value>0){
       remainingTime.value --;
     }
     else{
-     
-      console.log(startTime,endTime);
       clearInterval(time);
+    time = null;
+    isCounting.value = false;
       endTime.value = new Date().toLocaleTimeString(); // 記錄結束時間
       console.log(startTime.value + ' - ' + endTime.value);
     }
@@ -69,32 +79,16 @@ onMounted(() => {
 
 <template>
   <span>  {{ displayTime }}</span><br>
+  <el-progress type="circle" :percentage="progress" />
 
-  <svg width="120" height="120" viewBox="0 0 120 120">
-    <circle
-      cx="60"
-      cy="60"
-      :r=radius
-      stroke="#ddd"
-      stroke-width="10"
-      fill="none"
-    />
-    <circle
-      cx="60"
-      cy="60"
-      :r=radius
-      stroke="tomato"
-      stroke-width="10"
-      fill="none"
-      stroke-dasharray="314"
-      :stroke-dashoffset=dashOffset
-      stroke-linecap="round"
-      :transform="`rotate(${rotateAngle} 60 60)`" 
-    />
-  </svg>
-<br>
-  <button @click="toggleCountdown">{{isCounting?'Pause':'Start'}}</button>
-      <p>開始時間：{{ startTime }}</p>
+
+    <div class="mb-4">
+    <el-button :type="isCounting?'success':'primary'" @click="toggleCountdown" round>{{isCounting?'Pause':'Start'}}</el-button>
+    <el-button type="danger" round>Reset</el-button>
+  </div>
+
+
+  <!-- <button @click="toggleCountdown">{{isCounting?'Pause':'Start'}}</button> -->
+    <p>開始時間：{{ startTime }}</p>
     <p>結束時間：{{ endTime }}</p>
-
 </template>
